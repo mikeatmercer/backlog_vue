@@ -9,7 +9,11 @@ module.exports = {
     filename: 'build.js'
   },
   watch: (process.env.NODE_ENV === 'production') ? false : true,
+  externals: {
+    jquery: 'jQuery'
+  },
   module: {
+
     rules: [
       {
         test: /\.css$/,
