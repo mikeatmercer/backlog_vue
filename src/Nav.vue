@@ -31,15 +31,29 @@ export default {
 </script>
 
 <style scoped lang="scss">
+@import "../styles/colors.scss";
+
+
   .nav-tabs {
+    margin: 8px 0;
     button {
+      cursor: pointer;
+      margin: 0 8px 0 0;
       &.disabled {
         pointer-events: none;
         display:none;
       }
-    }
-    .active {
-      color: red;
+      border: 0;
+      color: $sapphire-medium;
+      font-weight: bold;
+      text-transform: uppercase;
+      font-size: 14px;
+      line-height: 30px;
+      padding: 0 12px;
+      border-radius: 2px;
+      &:hover, &.active {
+        background: $flat-hover;
+      }
     }
   }
 

@@ -1,16 +1,16 @@
 <template>
     <div id="backlog_app">
-      <h1>Mercer Link Product Backlog</h1>
+      <div class="backlog-header">
+        <h1>Mercer Link Product Backlog</h1>
+      </div>
 
-        <div v-if="page.view == 'overview'">
+
+        <div v-if="page_template == 'overview'">
           <nav-list :activeTab="activeTab" :items="items" :mostRecent="mostRecent" :tabswitch="activeTabSwitch" v-if="!errored"/>
           <div v-if="errored">There was an error</div>
-          <item-list :activeTab="activeTab" :mostRecent="mostRecent" :items="items" :pageSwitch="pageSwitch" v-if="mostRecent && items"/>
+          <item-list :activeTab="activeTab" :itemOrder="itemOrder" :mostRecent="mostRecent" :items="items" :pageSwitch="pageSwitch" v-if="mostRecent && items"/>
         </div>
-        <div v-if="page.view == 'detail'">
-          this is detail <br/>
-          <div v-on:click="pageSwitch('overview')">Back</div>
-        </div>
+        <page-detail v-if="page_template == 'detail'" :items="items" :profiles="people" :pageSwitch="pageSwitch" :id="page_id"/>
     </div>
 
 </template>
@@ -18,41 +18,90 @@
 <script>
     import NavList from './Nav.vue';
     import itemList from './itemList.vue';
+    import PageDetail from "./PageDetail.vue";
     import $ from 'jquery';
 
 
     export default {
+      components: {
+        "nav-list": NavList,
+        "item-list": itemList,
+        "page-detail" : PageDetail
+      },
       data() {
         return {
           activeTab: 'current',
           errored: false,
           mostRecent: null,
-          items: null,
-          page: {
-            view: "overview",
-            id: null
-          }
+          items: {},
+          itemOrder: [],
+          people: {},
+          scrollTop: 0,
+          page_template: "detail",
+          page_id: 79
         }
       },
-      components: {
-        "nav-list": NavList,
-        "item-list": itemList
+      watch: {
+        page_template: function() {
+          console.log(document.getElementById("s4-workspace").scrollTop);
+        },
       },
+
       methods: {
         activeTabSwitch(state) {
           this.activeTab = state;
         },
         pageSwitch(view, id) {
-          this.page.view = view;
-          if(!id) {
-            this.page.id = null;
-          } else {
-            this.page.id = id;
+          this.page_template = view;
+          this.page_id = id || null;
+        },
+
+        getProfileProperties(user) {
+
+
+          $.ajax({
+            url: "http://communities.mercer.com/_api/SP.UserProfiles.PeopleManager/GetPropertiesFor(accountName=@v)?@v=%27"+ encodeURIComponent(user.login) +"%27&$select=PictureUrl,PersonalUrl",
+            type: "GET",
+            headers: { "Accept": "application/json;odata=verbose" },
+            success: function(data) {
+              user.picture = data.d.PictureUrl.replace(":80","")
+              user.url = data.d.PersonalUrl
+
+              this.$set(this.people, "p_"+user.id, user);
+
+            }.bind(this)
+          })
+        },
+        getProfile(id) {
+          //console.log(id);
+          if(this.people["p_"+id]) {
+
+            this.$root.$emit("sendProfile", this.people["p_"+id]);
+            return ;
           }
+          var user = {};
+          user.id = id;
+
+          $.ajax({
+            url: "http://communities.mercer.com/KnowledgeManagement/_api/Web/GetUserById(" + id + ")",
+            type: "GET",
+            headers: { "Accept": "application/json;odata=verbose" },
+            success: function(data) {
+              var dataResults = data.d;
+
+              var nameA = dataResults.Title.split(',');
+              user.name = nameA[1]+" "+nameA[0];
+              user.email = dataResults.Email;
+              user.login = dataResults.LoginName.split("|")[1];
+              this.getProfileProperties(user);
+            }.bind(this)
+          })
         }
       },
       mounted: function() {
-
+        this.$root.$on('getProfile', function(id) {
+          this.getProfile(id)
+        }.bind(this));
 
          $.ajax({
           type: 'GET',
@@ -78,7 +127,16 @@
            "accept": "application/json;odata=verbose",
          },
          success: function(data) {
-           this.items = data.d.results;
+           var items = data.d.results;
+           console.log(items);
+           var iObj = {};
+           var order = [];
+           for (var i = 0; i < items.length ; i++) {
+             iObj["i_"+items[i].ID] = items[i];
+             order.push(items[i].ID);
+            }
+            this.items = iObj;
+            this.itemOrder = order;
 
          }.bind(this),
          error:  function (error) {

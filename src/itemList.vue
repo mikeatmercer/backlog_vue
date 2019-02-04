@@ -1,9 +1,7 @@
 <template>
-  <div>
-    <div v-for="item in filteredItems" :key="item.ID" v-on:click="pageSwitch('detail', item.ID)">
-      {{item.Title}} -- {{item.Status}}
+  <div class="item-list">
 
-    </div>
+    <list-item v-for="item in filteredItems" :key="item.id" :pageSwitch="pageSwitch" :mostRecent="mostRecent" :item="item" />
 
   </div>
 
@@ -12,30 +10,46 @@
 
 
 <script>
+import ListItem from "./ListItem.vue";
 export default {
   data() {
     return{}
   },
-  props: ['items',"mostRecent", "activeTab", "pageSwitch"],
+  props: ['items',"mostRecent","itemOrder", "activeTab", "pageSwitch"],
+  components: {
+    "list-item": ListItem
+  },
 
   computed: {
+
+
     filteredItems: function() {
-      var completed = this.items.filter(function(e,i){
-        return e.Status == "Completed";
-      });
-      var mostRecent = this.items.filter(function(e,i){
-        return e.Status === this.mostRecent;
+      var completed = [],
+          live = [],
+          mostRecent = [];
+      this.itemOrder.forEach(function(e,i){
+        var i = this.items['i_'+e];
+        if(i.Status === "Completed") {
+          completed.push(i);
+          return ;
+        }
+        if(i.Status === this.mostRecent) {
+          mostRecent.push(i);
+          return ;
+        }
+        live.push(i);
+
       }.bind(this));
-      var live = this.items.filter(function(e,i){
-        return e.Status !== ("Completed") && e.Status !== this.mostRecent;
-      }.bind(this));
-      if(this.activeTab === "completed") {
+      if(this.activeTab == "completed") {
         return completed;
       }
       if(this.activeTab === "current") {
         return mostRecent.concat(live);
       }
+
+
     }
+
   }
 
 
