@@ -2,7 +2,12 @@
 
   <a :href="userSafe.url || '#'" class="profile" :target="(userSafe.url) ? '_blank' : ''">
     <div class="img-container">
-      <div class="profile-ball" :class="{noimage: !userSafe.picture}" :data-initials="userInit" :style="{backgroundImage: 'url('+userSafe.picture+')'}"></div>
+      <div class="profile-ball" :class="{noimage: userSafe.picture === 'no-image'}" :data-initials="userInit"
+      :style="{
+        backgroundImage: (userSafe.picture !== 'no-image') ? 'url('+userSafe.picture+')' : ''
+
+
+      }"></div>
     </div>
 
     <div v-if="userSafe.name" class="name-container">

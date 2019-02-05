@@ -71,7 +71,7 @@
             type: "GET",
             headers: { "Accept": "application/json;odata=verbose" },
             success: function(data) {
-              user.picture = (!data.d.PictureUrl) ? null : data.d.PictureUrl.replace(":80","")
+              user.picture = (!data.d.PictureUrl) ? "no-image" : data.d.PictureUrl.replace(":80","")
               user.url = data.d.PersonalUrl
 
 

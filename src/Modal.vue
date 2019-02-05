@@ -99,7 +99,7 @@ var cleanHTML = require('sanitize-html');
     top: 0;
     width: 100%;
     height: 100%;
-    background: rgba(black, .75);
+    background: rgba(black, .85);
     font-family: "Segoe UI",Arial,sans-serif !important;
     line-height: 1.4 !important;
     /deep/ * {
