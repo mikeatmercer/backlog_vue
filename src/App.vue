@@ -5,12 +5,16 @@
       </div>
 
 
-        <div v-if="page_template == 'overview'">
+        <div>
           <nav-list :activeTab="activeTab" :items="items" :mostRecent="mostRecent" :tabswitch="activeTabSwitch" v-if="!errored"/>
           <div v-if="errored">There was an error</div>
           <item-list :activeTab="activeTab" :itemOrder="itemOrder" :mostRecent="mostRecent" :items="items" :pageSwitch="pageSwitch" v-if="mostRecent && items"/>
         </div>
-        <page-detail v-if="page_template == 'detail'" :items="items" :profiles="people" :pageSwitch="pageSwitch" :id="page_id"/>
+        <portal target-el="#portal-container" >
+          <modal v-if="page_template === 'detail'" :items="items" :mostRecent="mostRecent" :item="items['i_'+page_id]" :profiles="people" :pageSwitch="pageSwitch" :id="page_id"/>
+        </portal>
+      <!--  <page-detail v-if="page_template == 'detail'" :items="items" :profiles="people" :pageSwitch="pageSwitch" :id="page_id"/> -->
+
     </div>
 
 </template>
@@ -20,13 +24,16 @@
     import itemList from './itemList.vue';
     import PageDetail from "./PageDetail.vue";
     import $ from 'jquery';
-
-
+    import Vue from 'vue';
+    import PortalVue from "portal-vue";
+    import Modal from "./Modal.vue";
+    Vue.use(PortalVue);
     export default {
       components: {
         "nav-list": NavList,
         "item-list": itemList,
-        "page-detail" : PageDetail
+        "page-detail" : PageDetail,
+        "modal" : Modal
       },
       data() {
         return {
@@ -37,8 +44,8 @@
           itemOrder: [],
           people: {},
           scrollTop: 0,
-          page_template: "detail",
-          page_id: 79
+          page_template: "overview",
+          page_id: 68
         }
       },
       watch: {
@@ -64,10 +71,13 @@
             type: "GET",
             headers: { "Accept": "application/json;odata=verbose" },
             success: function(data) {
-              user.picture = data.d.PictureUrl.replace(":80","")
+              user.picture = (!data.d.PictureUrl) ? null : data.d.PictureUrl.replace(":80","")
               user.url = data.d.PersonalUrl
 
-              this.$set(this.people, "p_"+user.id, user);
+
+
+              this.$set(this.people["p_"+user.id], "picture", user.picture);
+              this.$set(this.people["p_"+user.id], "url", user.url);
 
             }.bind(this)
           })
@@ -93,6 +103,9 @@
               user.name = nameA[1]+" "+nameA[0];
               user.email = dataResults.Email;
               user.login = dataResults.LoginName.split("|")[1];
+              this.$set(this.people, "p_"+user.id, {});
+              this.$set(this.people["p_"+user.id], "email", user.email);
+              this.$set(this.people["p_"+user.id], "name", user.name.trim());
               this.getProfileProperties(user);
             }.bind(this)
           })
@@ -129,6 +142,7 @@
          success: function(data) {
            var items = data.d.results;
            console.log(items);
+
            var iObj = {};
            var order = [];
            for (var i = 0; i < items.length ; i++) {
@@ -155,7 +169,7 @@
   #backlog_app {
     font-family: "Segoe UI",Arial,sans-serif;
     width: 710px;
-    h1,h2,h3,h4,h5,h6,p, ul,li, ol, a, button {
+    h1,h2,h3,h4,h5,h6,p, ul,li, ol, a, button{
       font-family: "Segoe UI",Arial,sans-serif !important;
     }
   }

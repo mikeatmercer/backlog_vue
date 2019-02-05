@@ -1,9 +1,8 @@
 <template>
 <div class="list-item">
   <a href="#" v-on:click.prevent="pageSwitch('detail', item.ID)">
-  <div v-if="item.Status === mostRecent" class="next-pill">
-    In Next Release
-  </div>
+
+  <pill v-if="item.Status === mostRecent" :pilltext="'In Next Release'" />
   <div class="item-title">
     {{item.Title}}
   </div>
@@ -19,11 +18,16 @@
 
 
 <script>
+import Pill from "./Pill.vue";
 export default {
+
   data() {
     return{
 
     }
+  },
+  components: {
+    "pill": Pill
   },
   props: ['item',"pageSwitch","mostRecent"],
   methods: {
@@ -78,14 +82,15 @@ export default {
     a {
       display:block;
       text-decoration: none !important;
-      padding: 12px;
+      padding: 16px 12px;
       color: black;
       &:hover {
         background: $flat-hover;
       }
       .item-title {
-        font-size: 16px;
+        font-size: 18px;
         font-weight: bold;
+        margin-bottom: .25em;
       }
     }
     .next-pill {
@@ -101,6 +106,7 @@ export default {
     }
     .item-desc {
       line-height: 1.5;
+      font-size: 14px;
     }
   }
 
