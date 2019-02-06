@@ -54,6 +54,7 @@
 import Profile from './profile.vue';
 import Pill from "./Pill.vue";
 var cleanHTML = require('sanitize-html');
+import htmlStrip from "./util/html_strip";
   export default {
     data() {
       return {
@@ -76,9 +77,10 @@ var cleanHTML = require('sanitize-html');
         if(!this.item.Description) {
           return "";
         }
-        return cleanHTML(this.item.Description, {
-          allowedTags: cleanHTML.defaults.allowedTags.concat([ 'img' ])
-        });
+        return htmlStrip(this.item.Description);
+        /*return cleanHTML(this.item.Description, {
+
+        });*/
       },
       completionDate: function() {
         var months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
