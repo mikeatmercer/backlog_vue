@@ -53,7 +53,6 @@
 <script>
 import Profile from './profile.vue';
 import Pill from "./Pill.vue";
-var cleanHTML = require('sanitize-html');
 import htmlStrip from "./util/html_strip";
   export default {
     data() {
@@ -78,9 +77,7 @@ import htmlStrip from "./util/html_strip";
           return "";
         }
         return htmlStrip(this.item.Description);
-        /*return cleanHTML(this.item.Description, {
 
-        });*/
       },
       completionDate: function() {
         var months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
