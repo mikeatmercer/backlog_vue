@@ -76,7 +76,9 @@ var cleanHTML = require('sanitize-html');
         if(!this.item.Description) {
           return "";
         }
-        return cleanHTML(this.item.Description);
+        return cleanHTML(this.item.Description, {
+          allowedTags: cleanHTML.defaults.allowedTags.concat([ 'img' ])
+        });
       },
       completionDate: function() {
         var months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
@@ -135,6 +137,8 @@ var cleanHTML = require('sanitize-html');
       font-size: 16px;
       line-height: 1.4 !important;
       display:flex;
+      overflow-x: hidden;
+      overflow-y: auto;
 
     }
     &-leftcol {
@@ -158,6 +162,10 @@ var cleanHTML = require('sanitize-html');
           li {
             margin-bottom: .5em;
           }
+        }
+        img {
+          display:block;
+          max-width: 100%;
         }
       }
       flex: 1;

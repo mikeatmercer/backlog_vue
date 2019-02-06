@@ -48,11 +48,7 @@
           page_id: 68
         }
       },
-      watch: {
-        page_template: function() {
-          console.log(document.getElementById("s4-workspace").scrollTop);
-        },
-      },
+  
 
       methods: {
         activeTabSwitch(state) {
