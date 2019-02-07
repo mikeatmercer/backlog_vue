@@ -2,12 +2,12 @@
 <div class="list-item">
   <a href="#" v-on:click.prevent="pageSwitch('detail', item.ID)">
 
-  <pill v-if="item.Status === mostRecent" :pilltext="'In Next Release'" />
+
   <div class="item-title">
     {{item.Title}}
   </div>
   <div class="item-desc">
-    {{excerpt}}
+    <pill v-if="item.Status === mostRecent" :pilltext="'In Next Release'" /> {{excerpt}}
   </div>
 
   </a>
@@ -89,8 +89,8 @@ export default {
       }
       .item-title {
         font-size: 18px;
-        font-weight: bold;
         margin-bottom: .25em;
+        color: $sapphire-dark;
       }
     }
     .next-pill {
@@ -107,6 +107,7 @@ export default {
     .item-desc {
       line-height: 1.5;
       font-size: 14px;
+      color: $onyx-medium;
     }
   }
 
