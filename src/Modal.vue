@@ -19,7 +19,7 @@
       </div>
       <div class="modal-content">
           <div  class="modal-leftcol">
-            <div class="description" v-html="descSanitize" />
+            <div class="description" :class="{empty: !item.Description}" v-html="descSanitize" />
             <div class="tfs-label" v-if="item.TFS_ID">
               TFS ID: {{item.TFS_ID}}
             </div>
@@ -74,7 +74,7 @@ import htmlStrip from "./util/html_strip";
       },
       descSanitize: function() {
         if(!this.item.Description) {
-          return "";
+          return "There is no additional information about this product backlog item.";
         }
         return htmlStrip(this.item.Description);
 
@@ -142,6 +142,11 @@ import htmlStrip from "./util/html_strip";
     }
     &-leftcol {
       font-size: 16px;
+      .description {
+        &.empty {
+          color: #666;
+        }
+      }
       /deep/ * {
         line-height: 1.4 !important;
         font-size: 16px;

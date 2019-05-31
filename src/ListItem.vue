@@ -58,8 +58,14 @@ export default {
   },
   computed: {
     excerpt: function() {
+      if(!this.item.Description) {
+        return "";
+      }
       var doc = new DOMParser().parseFromString(this.item.Description, 'text/html');
       var text =  doc.body.textContent || "";
+      if(!text) {
+        return "";
+      }
       if(text.length < 200) {
         return text+" ...";
       }
